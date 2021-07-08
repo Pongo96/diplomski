@@ -55,6 +55,12 @@ router.get('/fetchFromFarmerDatabase', async function(req, res, next){
   res.status(200).json(response).send();
 });
 
+router.get('/privateInformation', async function(req, res, next){
+  const roots = req.param('roots');
+  const sidekey = req.param('sidekey');
+  const response = await functionsHandler.privateInformation(roots, sidekey)
+  res.status(200).json(response).send();
+});
 
 
 // /publicInformation?txsHash={productHash}
@@ -71,3 +77,5 @@ router.get('/fetchFromStoreDatabase', async function(req, res, next){
   res.status(200).json(response).send();
 });
 module.exports = router;
+
+
