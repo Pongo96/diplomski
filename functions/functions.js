@@ -24,14 +24,14 @@ var mysql = require('mysql');
 var con = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "11111111"
+  password: "aaaaaaaa"
 
 });
 
 const pool2 = mysql2.createPool({
   host: "localhost",
   user: "root",
-  password: "11111111"
+  password: "aaaaaaaa"
 
 })
 
