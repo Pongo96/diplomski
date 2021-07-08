@@ -24,14 +24,14 @@ var mysql = require('mysql');
 var con = mysql.createPool({
   host: "localhost",
   user: "root",
-  password: "aaaaaaaa"
+  password: "11111111"
 
 });
 
 const pool2 = mysql2.createPool({
   host: "localhost",
   user: "root",
-  password: "aaaaaaaa"
+  password: "11111111"
 
 })
 
@@ -110,16 +110,23 @@ async function publicInformation(roots) {
 
   const rootsArray = roots.trim().split("|")
   var resultsArray = []
-
+  console.log("1")
   for(var i = 0; i  < rootsArray.length; i++){
     resultsArray[i] = Mam.fetchSingle(rootsArray[i], mode)
   }
+  console.log("3")
   for(var i = 0; i  < rootsArray.length; i++){
+    try{
       resultsArray[i] = await resultsArray[i]
       resultsArray[i] = JSON.parse(trytesToAscii(resultsArray[i].payload))
+    }catch(err){
+      console.log(err.toString)
+      return {error: err.toString()}
+    }
+
       
   }
-
+  console.log("2")
   var jsonFinal = {farmer : {pesticides:[], fertilizers:[]}, store: {}, producer: {}}
   resultsArray.forEach(element => {
     switch (element.transactionOwner) {
@@ -149,13 +156,19 @@ async function privateInformation(roots, sideKey) {
   const rootsArray = roots.trim().split("|")
   var resultsArray = []
 
-  for(var i = 0; i  < rootsArray.length; i++){
-    resultsArray[i] = Mam.fetchSingle(rootsArray[i], 'private', sideKey)
-  }
-  for(var i = 0; i  < rootsArray.length; i++){
-      resultsArray[i] = await resultsArray[i]
-      resultsArray[i] = JSON.parse(trytesToAscii(resultsArray[i].payload))
-      
+  try{
+    for(var i = 0; i  < rootsArray.length; i++){
+      resultsArray[i] = Mam.fetchSingle(rootsArray[i], 'private', sideKey)
+    }
+    for(var i = 0; i  < rootsArray.length; i++){
+        resultsArray[i] = await resultsArray[i]
+        resultsArray[i] = JSON.parse(trytesToAscii(resultsArray[i].payload))
+        
+    }
+  }catch(err){
+    console.log(err.toString())
+    return {error: err.toString()}
+    
   }
 
   var jsonFinal = {farmer : {pesticides:[], fertilizers:[]}, store: {}, producer: {}}
@@ -221,21 +234,22 @@ async function insertIntoStoreDatabase(packet, txHash) {
 
 function parseStore (jsonStore, jsonFinal) {
 
-
+console.log(jsonStore)
   switch (jsonStore.txInLine) {
     case '1':
       jsonFinal.store.companyName = jsonStore.companyName
       jsonFinal.store.countryOfSale = jsonStore.countryOfSale
       break;
-    case '2':
+    case '3':
       jsonFinal.store.price = jsonStore.price
       break;
-    case '3':
+    case '2':
       jsonFinal.store.dateOfDelivery = jsonStore.dateOfDelivery
       break;
     default:
       console.log("Error!");
   }
+  console.log(jsonFinal)
   return jsonFinal
 }
 
